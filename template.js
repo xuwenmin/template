@@ -1214,10 +1214,10 @@
 			var temp = tree;
 			while(1){
 				temp  = temp.parent;
+				if(!temp) return temp;
 				if(temp.type == 'for'){
 					return temp;
 				}
-				if(!temp) return temp;
 			}
 			return temp;
 		}

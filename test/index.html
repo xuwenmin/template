@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>module load demo</title>
+	<meta charset='utf-8'>
 	<style>
 		.content{
 			margin: 20px;padding: 15px;
@@ -19,35 +20,35 @@
 	<script src='../template.js'></script>
 	<script type="text/template" id="view2">
 			<% for(user in users) {%>
-				<h1>hello {{user.name}}</h1>
+				<h1>hello1 {{user.name}}</h1>
 				<% if(user.name) { %>
 					<h2>hello2 {{ user.info}}</h2>
+					<% if(user.name) { %>
+						<h3>hello3 {{ user.info}}</h3>
+						<% if(user.name) { %>
+							<h4>hello4 {{ user.info}}</h4>
+						<% } %>
+					<% } %>
 				<% } %>
 			<% } %>
 	</script>
 	<script type="text/template" id="view1">
 		<p>check if statment</p>
-		<% if(showFn()) { %>
-			<h1>hello1 {{ user.name }}</h1>
-			<% if(user.age == 1) { %>
-				<h2>hello2 {{ user.action | substr:1}}</h2>
-			<% } %>
 			<% if(user.age == 1) { %>
 				<h3>hello3 {{ user.action }}</h3>
 				<% for(user in users) {%>
-					<h1>hello {{user.name}}</h1>
+					<h1>hello5 {{user.name}}</h1>
 				<% } %>
-				<% if(user.age == 1) { %>
-					<h4> hello4 {{ user.name}}</h4>
+				<% for(user in users) {%>
+					<h1>hello4 {{user.name}}</h1>
 				<% } %>
 			<% } %>
-		<% } %>	
 	</script>
 	<script type="text/template" id="view3">
 		{{ 1+2 }}
 	</script>
 	<script>
-		var html = document.querySelector('#view2').innerHTML;
+		var html = document.querySelector('#view1').innerHTML;
 		var _ = require('template');
 		var fn = _.template(html);
 		_.methods.push(['substr', function(str, index){
@@ -62,7 +63,7 @@
 				name: 'feenan',
 				info: 'haha',
 				action: 'start',
-				age: 2
+				age: 1
 			},
 			users:[
 				{name: 'feenan', info: 'haha'},
