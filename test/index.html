@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+	<title>module load demo</title>
+	<style>
+		.content{
+			margin: 20px;padding: 15px;
+			border:1px solid #ccc;
+			border-radius: 5px;
+			box-shadow: 0 0 5px rgb(100, 200, 120);
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		
+	</div>
+	<script src="js/require.js"></script>
+	<script src='../template.js'></script>
+	<script type="text/template" id="view2">
+			<% for(user in users) {%>
+				<h1>hello {{user.name}}</h1>
+				<% if(user.name) { %>
+					<h2>hello2 {{ user.info}}</h2>
+				<% } %>
+			<% } %>
+	</script>
+	<script type="text/template" id="view1">
+		<p>check if statment</p>
+		<% if(showFn()) { %>
+			<h1>hello1 {{ user.name }}</h1>
+			<% if(user.age == 1) { %>
+				<h2>hello2 {{ user.action | substr:1}}</h2>
+			<% } %>
+			<% if(user.age == 1) { %>
+				<h3>hello3 {{ user.action }}</h3>
+				<% for(user in users) {%>
+					<h1>hello {{user.name}}</h1>
+				<% } %>
+				<% if(user.age == 1) { %>
+					<h4> hello4 {{ user.name}}</h4>
+				<% } %>
+			<% } %>
+		<% } %>	
+	</script>
+	<script type="text/template" id="view3">
+		{{ 1+2 }}
+	</script>
+	<script>
+		var html = document.querySelector('#view2').innerHTML;
+		var _ = require('template');
+		var fn = _.template(html);
+		_.methods.push(['substr', function(str, index){
+			return str.substr(index);
+		}]);
+		document.querySelector('.content').innerHTML = fn({
+			showFn: function(){
+				return true;
+			},
+			showh1: true,
+			user: {
+				name: 'feenan',
+				info: 'haha',
+				action: 'start',
+				age: 2
+			},
+			users:[
+				{name: 'feenan', info: 'haha'},
+				{name: 'feenan1', info: 'haha1'}
+			]
+		});
+	</script>
+</body>
+</html>

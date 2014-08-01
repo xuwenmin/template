@@ -1,5 +1,5 @@
 {
-  "name": "template",
+  "name": "x-template",
   "version": "0.0.1",
   "description": "a simple string template",
   "main": "template.js",
