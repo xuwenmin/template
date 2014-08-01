@@ -1224,9 +1224,9 @@
 		// 解析树
 		function parseTree(tree, context){
 			for(var i in tree){
-				if(tree[i].type == 'if'){
+				if(tree[i].type == 'if' && !tree[i].done){
 					$$if(tree[i], context);
-				}else if(tree[i].type == 'for'){
+				}else if(tree[i].type == 'for' && !tree[i].done){
 					$$for(tree[i], context);
 				}
 			}
@@ -1263,7 +1263,7 @@
 					info = info.replace(new RegExp(base, 'gim'), '');
 				}
 			}
-			
+			tree.done = true;
 		}
 		// 增加for条件的检查 each 里不支持if
 		function $$for(tree, context){
@@ -1302,6 +1302,7 @@
 				}
 				return item;
 			});
+			tree.done = true;
 		}
 		var source = {};
 		// 收集解析的字符串

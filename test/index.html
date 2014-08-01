@@ -19,18 +19,18 @@
 	<script src="js/require.js"></script>
 	<script src='../template.js'></script>
 	<script type="text/template" id="view2">
-			<% for(user in users) {%>
-				<h1>hello1 {{user.name}}</h1>
+		<% for(user in users) {%>
+			<h1>hello1 {{user.name}}</h1>
+			<% if(user.name) { %>
+				<h2>hello2 {{ user.info}}</h2>
 				<% if(user.name) { %>
-					<h2>hello2 {{ user.info}}</h2>
+					<h3>hello3 {{ user.info}}</h3>
 					<% if(user.name) { %>
-						<h3>hello3 {{ user.info}}</h3>
-						<% if(user.name) { %>
-							<h4>hello4 {{ user.info}}</h4>
-						<% } %>
+						<h4>hello4 {{ user.info}}</h4>
 					<% } %>
 				<% } %>
 			<% } %>
+		<% } %>
 	</script>
 	<script type="text/template" id="view1">
 		<p>check if statment</p>
@@ -42,10 +42,20 @@
 				<% for(user in users) {%>
 					<h1>hello4 {{user.name}}</h1>
 				<% } %>
-			<% } %>
+		<% } %>
 	</script>
 	<script type="text/template" id="view3">
 		{{ 1+2 }}
+	</script>
+	<script type="text/template" id="view4">
+
+		<% for(user in users) {%>
+			<h1>hello5 {{user.name}}</h1>
+			<% for(action in user.actions) {%>
+				<h1>hello4 {{action.name}}</h1>
+			<% } %>
+		<% } %>
+		
 	</script>
 	<script>
 		var html = document.querySelector('#view1').innerHTML;
@@ -66,8 +76,12 @@
 				age: 1
 			},
 			users:[
-				{name: 'feenan', info: 'haha'},
-				{name: 'feenan1', info: 'haha1'}
+				{name: 'feenan', info: 'haha', actions: [
+					{ name: 'do'}, {name: 'help'}
+				]},
+				{name: 'feenan1', info: 'haha1', actions: [
+					{ name: 'dot'}, {name: 'hot'}
+				]}
 			]
 		});
 	</script>
