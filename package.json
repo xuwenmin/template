@@ -11,5 +11,9 @@
     "template"
   ],
   "author": "xuwenmin",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/xuwenmin/template.git"
+  },
   "license": "ISC"
 }
