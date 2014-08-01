@@ -1,0 +1,15 @@
+{
+  "name": "template",
+  "version": "0.0.1",
+  "description": "a simple string template",
+  "main": "template.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "string",
+    "template"
+  ],
+  "author": "xuwenmin",
+  "license": "ISC"
+}
