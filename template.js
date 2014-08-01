@@ -1211,11 +1211,13 @@
 		}
 		// 检查if树的父节点没有没for
 		function checkForParent(tree){
-			var temp;
-			while((temp = tree.parent)){
+			var temp = tree;
+			while(1){
+				temp  = temp.parent;
 				if(temp.type == 'for'){
 					return temp;
 				}
+				if(!temp) return temp;
 			}
 			return temp;
 		}
