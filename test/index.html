@@ -17,7 +17,7 @@
 		
 	</div>
 	<script src="js/require.js"></script>
-	<script src='../template.js'></script>
+	<script src='../template.0.1.js'></script>
 	<script type="text/template" id="view2">
 		<% for(user in users) {%>
 			<h1>hello1 {{user.name}}</h1>
@@ -57,8 +57,19 @@
 		<% } %>
 		
 	</script>
+	<script type="text/template" id="view5">
+		<p>bottom is intruduce new parse method!</p>
+		<% if (user.age > 0 ) {%>
+				<% for(action in user.actions) {%>
+					<h3>hello3 {{action.name}}</h3>
+					<% if(action.name == 'do') {%>
+						<h4>hello4 {{action.name}}</h4>
+					<% }%>
+				<% }%>
+		<% }%>
+	</script>
 	<script>
-		var html = document.querySelector('#view1').innerHTML;
+		var html = document.querySelector('#view5').innerHTML;
 		var _ = require('template');
 		var fn = _.template(html);
 		_.methods.push(['substr', function(str, index){
@@ -73,13 +84,16 @@
 				name: 'feenan',
 				info: 'haha',
 				action: 'start',
-				age: 1
+				age: 1,
+				actions: [
+					{ name: 'do'}, {name: 'help'}
+				]
 			},
 			users:[
-				{name: 'feenan', info: 'haha', actions: [
+				{name: 'feenan', info: 'haha2', actions: [
 					{ name: 'do'}, {name: 'help'}
 				]},
-				{name: 'feenan1', info: 'haha1', actions: [
+				{name: 'feenan1', info: 'haha3', actions: [
 					{ name: 'dot'}, {name: 'hot'}
 				]}
 			]

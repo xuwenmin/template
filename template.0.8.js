@@ -1211,7 +1211,7 @@
 						if(tree[nif].parent && tree[nif] == tree[nif].parent.childs[0]){
 							if (!checkForParent(tree[nif])){
 								$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-								// $1 = 'var __context = this ;' + $1;
+								$1 = 'var __context = this ;' + $1;
 							}else{
 								$1 = 'if(' + tree[nif].value + ') { result.push(\''; 
 							}
@@ -1223,7 +1223,7 @@
 						}else if (!checkForParent(tree[nif])){
 							// 此时还要替换if中的表达式
 							$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-							// $1 = 'var __context = this ;' + $1;
+							$1 = 'var __context = this ;' + $1;
 						}
 						$1 = '$' + nif + $1 + '$' + nif;
 					}else if($4){

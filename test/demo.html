@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+	<head>
+		<title>demo</title>
+		<meta charset='utf-8'>
+
+	</head>
+	<body>
+		<div class="info">
+			
+		</div>
+		<script src="js/require.js"></script>
+		<script src='../template.0.8.js'></script>
+		<script type="text/template" id="view1">
+
+			<% for(user in users) {%>
+					<% if(user.name == 'haha'){ %>
+						<h1>hello4 {{user.name}}</h1>
+						<% if(user.name == 'haha'){ %>
+							<button>添加</button>
+						<% }%>
+						<% for(action in user.actions) {%>
+							<h1>hello2 {{action.name}}</h1>
+
+						<% } %>
+					<%}%>
+			<% } %>
+		</script>
+		<script type="text/template" id="view2">
+			<p>bottom is test for {{user.name}}</p>
+			<% if(user.name == 'feenan'){ %>
+				<h1>hello4 {{user.name}}</h1>
+				<% for(user in users) {%>
+					<h2>hello2 {{user.name}}</h2>
+					<% for(action in user.actions) {%>
+						<h3>hello3 {{action.name}}</h3>
+					<% }%>
+				<% }%>
+			<%}%>
+		</script>
+		<script type="text/template" id="view3">
+			<% for(user in users) {%>
+				<h1>hello {{user.name}}</h1>
+				<% if(user.name) { %>
+					<h2>hello2 {{ user.info}}</h2>
+				<% } %>
+				<% for(action in user.actions) {%>
+					<h3>hello 3 {{action.name}}</h3>
+				<% }%>
+			<% } %>
+		</script>
+		<script>
+			var slice    = Array.prototype.slice,
+				concat   = Array.prototype.concat,
+				regModel = /\{\{(.+?)\}\}/g,
+				noop = function(){};
+			var _ = require('template');
+			var regIfStart = /<%\s*if\s*\((.+?)\)\s*{\s*%>/g;
+			var regIfEnd = /<%\s*}\s*%>/g;
+			var regor = /(<%\s*((if)|(for))\s*\((.+?)\)\s*\{\s*%>)|(<%\s*}\s*%>)/g;
+			var regfor = /\s*(.+)\s*in\s*(.+)\s*/g;
+			var regnative = /([\?\:\+\*\/\.\(\)\{\}\|]{1})/g;
+			var data = {
+				showFn: function(){
+					return true;
+				},
+				showh1: true,
+				user: {
+					name: 'feenan',
+					info: 'haha',
+					action: 'start',
+					age: 1,
+					actions: [
+						{ name: 'do'}, {name: 'help'}
+					]
+				},
+				users:[
+					{name: 'feenan', info: 'haha2', actions: [
+						{ name: 'do'}, {name: 'help'}
+					]},
+					{name: 'feenan1', info: 'haha3', actions: [
+						{ name: 'dot'}, {name: 'hot'}
+					]}
+				]
+			};
+			
+			var info = document.querySelector('#view3').innerHTML;
+
+			document.querySelector('.info').innerHTML = _.template(info, data);
+		</script>	
+	</body>
+</html>

@@ -90,7 +90,7 @@ fn(data);
 
 > 注意: 假如`$template.template`只传递字符串的话会返回一个编译函数,下次传递数据才会生成最后的字符串.
 
-目前`if`语句支持无限嵌套`if语句`,对嵌套`for`语句只支持到嵌套`一级`.
+目前`if`语句支持无限嵌套`if语句`,支持嵌套`for`语句.
 
 ```html
 
@@ -107,7 +107,7 @@ fn(data);
 
 ### 循环语句for
 
-目前`for`语句支持无限嵌套`if`语句,不支持嵌套`for`本身.
+目前`for`语句支持无限嵌套`if`语句,支持嵌套`for`本身.
 
 ```html
 
@@ -116,6 +116,9 @@ fn(data);
 		<% if(user.name) { %>
 			<h2>hello2 {{ user.info}}</h2>
 		<% } %>
+		<% for(action in user.actions) {%>
+			<h3>hello 3 {{action.name}}</h3>
+		<% }%>
 	<% } %>
 
 ```
@@ -140,9 +143,7 @@ $template.template('your age is {{ age | int:5 }}', { age: '50'}); // => 50
 ### 待改进的地方
 
 * `if`语句增加`else`功能
-* `for`嵌套`for`语句
-
-考虑到视图的规范性,目前上面两点没有实现,这个以后会慢慢加上.
+* 增加字符串安全过滤功能
 
 ### 总结
 

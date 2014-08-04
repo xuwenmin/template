@@ -1096,31 +1096,7 @@
 
 	// 保存过滤函数
 	_.methods = [];
-	// 查询过滤函数
-	function $$helper(fnname){
-		var fn = noop;
-		_.methods.forEach(function(v, k){
-			if(Array.isArray(v)){
-				if(v[0] == fnname){
-					fn = v[1];
-				}
-			}
-		});
-		return fn;
-	}
-		
 	var $parse = _.$parse;
-	// 支持四则运算以及三元运算,一元运算符
-	function $$parse(key, context){
-		var parseOptions = {
-			csp: false,
-		    unwrapPromises: false,
-		    logPromiseWarnings: true
-		}
-		var lexer = new $parse.Lexer(parseOptions);
-		var parser = new $parse.Parser(lexer, $$helper, parseOptions);
-		return parser.parse(key,false)(context);
-	}
 	_.template = function(info, data){
 		// 不支持运算，只支持变量赋值
 		function $$getValue(key, context){
@@ -1136,22 +1112,40 @@
 			if(typeof context == 'object') return '';
 			return context;
 		}
-		
+		// 查询过滤函数
+		function $$helper(fnname){
+			var fn = noop;
+			_.methods.forEach(function(v, k){
+				if(Array.isArray(v)){
+					if(v[0] == fnname){
+						fn = v[1];
+					}
+				}
+			});
+			return fn;
+		}
+		// 支持四则运算以及三元运算,一元运算符
+		function $$parse(key, context){
+			var parseOptions = {
+				csp: false,
+			    unwrapPromises: false,
+			    logPromiseWarnings: true
+			}
+			var lexer = new $parse.Lexer(parseOptions);
+			var parser = new $parse.Parser(lexer, $$helper, parseOptions);
+			return parser.parse(key,false)(context);
+		}
 		// 生成最后返回的字符串
 		function $$build(context){
-			info = info.replace(/[\r\n]+/g, '');
-			info = '<% if(1) {%>' + info + '<% } %>';
 			var tree = buildTree();
-			parseTree(tree);
-			// 除掉所有$数字wrap
-			info = info.replace(/\$[\d]+/g, '');
-			// 除掉不在if,for里的模型red
-
-			info = 'var __context = this;var result = [];' + info + ';return result.join(\'\');';
-			console.log(info);
-			var fn = new Function(info);
-			console.log(fn);
-			return fn.call(data);
+			parseTree(tree, context);
+			for(var s in source){
+				var base = s.replace(regnative, function($0, $1){
+					return '\\' + $1;
+				})
+				info = info.replace(new RegExp(base, 'gim'), $$parse(source[s], context));
+			}
+			return info;
 		}
 		// 生成表达式树
 		function buildTree(){
@@ -1189,60 +1183,20 @@
 					if(nif != 0){
 						// 找最近的没有关闭的tree
 						var parent = findLastNoEnd(nif);
-						if(parent){
-							parent.childs = parent.childs || [];
-							parent.childs.push(tree[nif]);
-							tree[nif].parent = parent; 
-						}	
+						parent.childs = parent.childs || [];
+						parent.childs.push(tree[nif]);
+						tree[nif].parent = parent; 
 					}else{
 						tree[nif].parent = null;
 					}
+					$1 = '$' + nif + $1 + '$' + nif;
+					tree[nif].start = $1;
 					tree[nif].value = $5;
-					// $1 = '$' + nif + $1 + '$' + nif;
-					var $var = 'i' + nif;
-					var newKey, oldContext;
-					tree[nif].value.replace(regfor, function($0, $1, $2){
-						newKey = String($1).trim();
-						oldContext = String($2).trim();
-					});
 					if($3){
 						tree[nif].type = 'if';
-						
-						if(tree[nif].parent && tree[nif] == tree[nif].parent.childs[0]){
-							if (!checkForParent(tree[nif])){
-								$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-								// $1 = 'var __context = this ;' + $1;
-							}else{
-								$1 = 'if(' + tree[nif].value + ') { result.push(\''; 
-							}
-							$1 = '\');' + $1;
-						}else if(!tree[nif].parent){
-							// 此时还要替换if中的表达式
-							$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-							// $1 = 'var __context = this ;' + $1;
-						}else if (!checkForParent(tree[nif])){
-							// 此时还要替换if中的表达式
-							$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-							// $1 = 'var __context = this ;' + $1;
-						}
-						$1 = '$' + nif + $1 + '$' + nif;
 					}else if($4){
 						tree[nif].type = 'for';
-						// 保存for上下文的变量
-						tree[nif].key = newKey;
-						tree[nif].args = oldContext;
-						$1 = 'for(var ' + $var + '=0;' + $var + ' < ' + oldContext + '.length;' + $var + '++) { ' + 'var ' + newKey + ' = '+ oldContext +'['+$var+'];'+   ' var  __context = {};__context[\''+ newKey +'\'] = ' + oldContext +    '[' + $var+ '];'+  ' result.push(\''; 
-						if(tree[nif].parent && tree[nif] == tree[nif].parent.childs[0]){
-							if(!checkForParent(tree[nif])){
-								$1 = 'var '+ oldContext +' = this.' + oldContext+';' + $1;
-							}
-							$1 = '\');' + $1;
-						}else if (!checkForParent(tree[nif])){
-							$1 = 'var '+ oldContext +' = this.' + oldContext+';' + $1;
-						}
-						$1 = '$' + nif + $1 + '$' + nif;
 					}
-					tree[nif].start = $1;
 					open = true;
 					init = false;
 					return $1;
@@ -1250,32 +1204,14 @@
 					// }   <==
 					open = false;
 					init = false;
-					var end = findLastNoEnd();
-					var id = end.id;
-					// $6 = '$' + id + $6 + '$' + id;
-					if(end.childs){
-						$6 = ' } ';
-					}else{
-						$6 = ' \');} ';
-					}
+					var id = findLastNoEnd().id;
 					$6 = '$' + id + $6 + '$' + id;
-					end.end = $6;
+					findLastNoEnd().end = $6;
 					return $6;
 				}
 			});
+			console.log(tree);
 			return tree;
-		}
-		function buildModel(tree){
-			var base = '(\\$' + tree.id + '\\s*[\\s\\S]+\\s*\\$' + tree.id + ')([\\s\\S]+)(\\$' + tree.id + '\\s*[\\s\\S]+\\s*\\$' + tree.id + ')';
-
-			info = info.replace(new RegExp(base, 'gim'), function($0, $1, $2, $3){
-				// $1 为for里面的值
-				$2 = $2.replace(regModel, function($0, $1){
-					$1  = '\' + _.parse(\'' + $1 + '\',__context) + \'';
-					return $1;
-				});
-				return $1 + $2 + $3
-			});
 		}
 		// 检查if树的父节点没有没for
 		function checkForParent(tree){
@@ -1290,18 +1226,122 @@
 			return temp;
 		}
 		/**
+		* 此解析方法解决不了for嵌套for的问题
+		* 用新方法替换
+		*/
+		function parseTree_old(tree, context){
+			for(var i in tree){
+				if(tree[i].type == 'if' && !tree[i].done){
+					$$if(tree[i], context);
+				}else if(tree[i].type == 'for' && !tree[i].done){
+					$$for(tree[i], context);
+				}
+			}
+		}
+		/**
 		* 新增解析方法，使用深度树遍历算法
-		* 
+		* 支持for嵌套两级,作用域也嵌套
 		**/
 		function parseTree(tree, context){
 			for(var i in tree){
 				var childs = tree[i].childs;
-				if(childs && childs.length){
-					parseTree(childs);
+				if(tree[i].type == 'if' && !tree[i].done){
+					$$if(tree[i], context);
+					if(childs && childs.length){
+						parseTree(childs, context);
+					}
+				}else if(tree[i].type == 'for' && !tree[i].done){
+					// 此处需要计算for的作用域,因为for跟if不一样,它会新建作用域
+					$$for(tree[i], context);
+					if(childs && childs.length){
+						parseTree(childs, context);
+					}
+					
 				}
-				buildModel(tree[i]);
 			}
 		}
+
+		// 增加if条件的检查 支持嵌套,支持包含each
+		function $$if(tree, context){
+			// 开始解析if树
+			var parent;
+			if((parent = checkForParent(tree))){
+				// 在for里面,所以if得获取for的上下文
+				// 检查条件以新作用域
+				// 假如有true，则除掉自己
+				var base = '\\$' + tree.id + '<%([\\s\\S]+?)\\{\\s*%>\\$' + tree.id + '([\\s\\S]+?)\\$' + tree.id + '<%\\s*}\\s*%>\\$' + tree.id;
+				var i = 0;
+				info = info.replace(new RegExp(base, 'gim'), function($0, $1, $2){
+					var obj = {};
+					obj[parent.scope.key] = parent.scope.vals[i++];
+					console.log('0:' + $0, '\r\n1:' + $1, '\r\n2:' + $2);
+					if(!!!($$parse(tree.value, obj))){
+						// 删除
+						return '';
+					}else{
+						return $2;
+					}
+				});
+			}else{
+				// 不在for里面
+				if(!!!($$parse(tree.value, context))){
+					//  条件不成立则清除
+					var base = '\\$' + tree.id + '[\\s\\S]+\\$' + tree.id;
+					info = info.replace(new RegExp(base, 'gim'), '');
+				}else{
+					var base = '\\$' + tree.id + '[\\s\\S]+?\\$' + tree.id;
+					info = info.replace(new RegExp(base, 'gim'), '');
+				}
+			}
+			tree.done = true;
+		}
+		// 增加for条件的检查 each 里不支持if
+		function $$for(tree, context){
+			console.log(context);
+			// 对于for的处理用模板提供的获取值方法,提前解析出来
+			// 先生成所有的元素, 最后除掉表达式
+			var newKey, oldContext,item = '';
+			tree.value.replace(regfor, function($0, $1, $2){
+				newKey = $1.trim();
+				oldContext = $$getValue($2, context);
+			});
+			console.log(newKey, oldContext);
+			// 保存上下文可以在包含if的时候引用
+			tree.scope = {
+				key: newKey,
+				vals: oldContext
+			};
+			// 开始替换值
+			var base = '\\$' + tree.id + '<%[\\s\\S]+\\{\\s*%>\\$' + tree.id + '([\\s\\S]+)\\$' + tree.id + '<%\\s*}\\s*%>\\$' + tree.id;
+			info = info.replace(new RegExp(base, 'gim'), function($0, $1, $2){
+				var result = {};
+				var $newContext = {};
+				// 获取当前项所有绑定模型
+				$1.replace(regModel, function($0, $1){
+					result[$0] = result[$0] || $1;
+				});
+				// 今次计算模型的值,并迭代
+				for(var i = 0; i < oldContext.length; i++){
+					$newContext[newKey] = oldContext[i];
+					var _item = $1;
+					for(var s in result){
+						var base = s.replace(regnative, function($0, $1){
+							return '\\' + $1;
+						})
+						_item = _item.replace(new RegExp(base, 'gim'), $$parse(result[s],$newContext));
+					}
+					item += _item;
+				}
+				return item;
+			});
+			tree.done = true;
+		}
+		var source = {};
+		// 收集解析的字符串
+		info.replace(regModel, function($0, $1){
+			source[$0] = source[$0] || $1;
+		});
+
 		if(!data){
 			return function(context){
 				return $$build(context);
@@ -1310,7 +1350,6 @@
 			return $$build(data);
 		}
 	};
-	_.parse = $$parse;
 	// 增加一个转换数据的默认过滤器
 	_.methods.push(['number', function(text){
 		return Number(text);
