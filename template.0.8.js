@@ -1146,11 +1146,8 @@
 			// 除掉所有$数字wrap
 			info = info.replace(/\$[\d]+/g, '');
 			// 除掉不在if,for里的模型red
-
 			info = 'var __context = this;var result = [];' + info + ';return result.join(\'\');';
-			console.log(info);
 			var fn = new Function(info);
-			console.log(fn);
 			return fn.call(data);
 		}
 		// 生成表达式树
