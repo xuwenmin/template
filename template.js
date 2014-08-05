@@ -1146,11 +1146,8 @@
 			// 除掉所有$数字wrap
 			info = info.replace(/\$[\d]+/g, '');
 			// 除掉不在if,for里的模型red
-
 			info = 'var __context = this;var result = [];' + info + ';return result.join(\'\');';
-			console.log(info);
 			var fn = new Function(info);
-			console.log(fn);
 			return fn.call(data);
 		}
 		// 生成表达式树
@@ -1211,7 +1208,7 @@
 						if(tree[nif].parent && tree[nif] == tree[nif].parent.childs[0]){
 							if (!checkForParent(tree[nif])){
 								$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-								// $1 = 'var __context = this ;' + $1;
+								$1 = 'var __context = this ;' + $1;
 							}else{
 								$1 = 'if(' + tree[nif].value + ') { result.push(\''; 
 							}
@@ -1223,7 +1220,7 @@
 						}else if (!checkForParent(tree[nif])){
 							// 此时还要替换if中的表达式
 							$1 = 'if(!!_.parse(\"' + tree[nif].value + '\",__context)) { result.push(\''; 
-							// $1 = 'var __context = this ;' + $1;
+							$1 = 'var __context = this ;' + $1;
 						}
 						$1 = '$' + nif + $1 + '$' + nif;
 					}else if($4){
@@ -1267,8 +1264,7 @@
 		}
 		function buildModel(tree){
 			var base = '(\\$' + tree.id + '\\s*[\\s\\S]+\\s*\\$' + tree.id + ')([\\s\\S]+)(\\$' + tree.id + '\\s*[\\s\\S]+\\s*\\$' + tree.id + ')';
-
-			info = info.replace(new RegExp(base, 'gim'), function($0, $1, $2, $3){
+			info = info.replace(new RegExp(base, 'g'), function($0, $1, $2, $3){
 				// $1 为for里面的值
 				$2 = $2.replace(regModel, function($0, $1){
 					$1  = '\' + _.parse(\'' + $1 + '\',__context) + \'';

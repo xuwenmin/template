@@ -10,18 +10,16 @@
 			
 		</div>
 		<script src="js/require.js"></script>
-		<script src='../template.0.9.js'></script>
+		<script src='../template.0.1.0.js'></script>
 		<script type="text/template" id="view1">
-
 			<% for(user in users) {%>
-					<% if(user.name == 'haha'){ %>
+					<% if(user.name == 'feenan'){ %>
 						<h1>hello4 {{user.name}}</h1>
 						<% if(user.name == 'haha'){ %>
 							<button>添加</button>
 						<% }%>
 						<% for(action in user.actions) {%>
 							<h1>hello2 {{action.name}}</h1>
-
 						<% } %>
 					<%}%>
 			<% } %>
@@ -84,9 +82,9 @@
 				]
 			};
 			
-			var info = document.querySelector('#view3').innerHTML;
-
-			document.querySelector('.info').innerHTML = _.template(info, data);
+			var info = document.querySelector('#view1').innerHTML;
+			var html = _.template(info, data);
+			document.querySelector('.info').innerHTML = html;
 		</script>	
 	</body>
 </html>
